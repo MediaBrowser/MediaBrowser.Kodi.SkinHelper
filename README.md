@@ -1,4 +1,4 @@
-MediaBrowser.Kodi.SkinHelper
+﻿MediaBrowser.Kodi.SkinHelper
 ============================
 
 Skin helper functions/services for Kodi MediaBrowser AddOn
@@ -17,7 +17,7 @@ Note: if you keep the skin initialize intact you will also have the old xbmb3c. 
 
 The service provides the following window properties:
 
-USER COLLECTIONS
+## USER COLLECTIONS
 MediaBrowser.usr.X.title  --> title of collection
 MediaBrowser.usr.X.path  --> path to collection (defaults to collapsed boxsets for movies)
 MediaBrowser.usr.X.type  --> the type of the collection
