@@ -34,8 +34,8 @@ def setView(containerType,viewId):
 
     if xbmc.getCondVisibility("System.HasAddon(plugin.video.xbmb3c)"):
         __settings__ = xbmcaddon.Addon(id='plugin.video.xbmb3c')
-        __settings__.setSetting(xbmc.getSkinDir()+ '_VIEW_' + containerType, viewId)
-
+        if __settings__.getSetting(xbmc.getSkinDir()+ '_VIEW_' + containerType) != "disabled":
+            __settings__.setSetting(xbmc.getSkinDir()+ '_VIEW_' + containerType, viewId)
         
 def setRecommendedMBSettings(skin):
     addonSettings = xbmcaddon.Addon(id='plugin.video.xbmb3c')
