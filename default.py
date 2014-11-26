@@ -6,6 +6,7 @@ import os
 import time
 import urllib
 import xbmcvfs
+import xml.etree.ElementTree as etree
 
 # function to set the current view permanent in the xbmb3c addon
 def setView(containerType,viewId):
