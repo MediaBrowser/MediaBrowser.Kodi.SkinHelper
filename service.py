@@ -15,6 +15,11 @@ if xbmc.getCondVisibility("System.HasAddon(plugin.video.xbmb3c)"):
     __cwd__ = __settings__.getAddonInfo('path')
     BASE_RESOURCE_PATH = xbmc.translatePath( os.path.join( __cwd__, 'resources/lib' ) )
     sys.path.append(BASE_RESOURCE_PATH)
+    from DownloadUtils import DownloadUtils
+    downloadUtils = DownloadUtils()
+    from DownloadUtils import DownloadUtils
+    downloadUtils = DownloadUtils()
+    import MainModule
 
 class SkinHelper ():
 
@@ -35,7 +40,7 @@ class SkinHelper ():
     shortcheckinterval = 60
     _userId = ""
 
-    doDebugLog = False
+    doDebugLog = True
 
     def logMsg(self, msg, level = 1):
         if self.doDebugLog == True:
@@ -70,8 +75,7 @@ class SkinHelper ():
 
     def updateCollectionArtLinks(self):
 
-        from DownloadUtils import DownloadUtils
-        downloadUtils = DownloadUtils()        
+        
 
         addonSettings = xbmcaddon.Addon(id='plugin.video.xbmb3c')
 
@@ -609,41 +613,29 @@ class SkinHelper ():
     def getContentFromCache(self):
         WINDOW = xbmcgui.Window( 10000 )
         self.logMsg("[MB3 SkinHelper] get properties from cache...")
-        if xbmc.getCondVisibility("System.HasAddon(plugin.video.xbmb3c)"):
-            linkCount = 0
-            while linkCount !=10:
-                mbstring = "titanmb3." + str(linkCount)
-                if xbmc.getInfoLabel("Skin.String(" + mbstring + '.title)') != "":
-                    WINDOW.setProperty(mbstring + '.title', xbmc.getInfoLabel("Skin.String(" + mbstring + '.title)'))
-                    WINDOW.setProperty(mbstring + '.image', xbmc.getInfoLabel("Skin.String(" + mbstring + '.image)'))
-                    WINDOW.setProperty(mbstring + '.path', xbmc.getInfoLabel("Skin.String(" + mbstring + '.path)'))
-                linkCount += 1
-
-        if xbmc.getCondVisibility("System.HasAddon(plugin.video.plexbmc)"):
-            linkCount = 0
-            while linkCount !=10:
-                plexstring = "plexbmc." + str(linkCount)
-                if xbmc.getInfoLabel("Skin.String(" + plexstring + '.title)') != "":
-                    WINDOW.setProperty(plexstring + '.title', xbmc.getInfoLabel("Skin.String(" + plexstring + '.title)'))
-                    WINDOW.setProperty(plexstring + '.image', xbmc.getInfoLabel("Skin.String(" + plexstring + '.image)'))
-                    WINDOW.setProperty(plexstring + '.path', xbmc.getInfoLabel("Skin.String(" + plexstring + '.path)'))
-                linkCount += 1        
+        linkCount = 0
+        while linkCount !=10:
+            mbstring = "MediaBrowser.usr." + str(linkCount)
+            if xbmc.getInfoLabel("Skin.String(" + mbstring + '.title)') != "":
+                WINDOW.setProperty(mbstring + '.title', xbmc.getInfoLabel("Skin.String(" + mbstring + '.title)'))
+                WINDOW.setProperty(mbstring + '.image', xbmc.getInfoLabel("Skin.String(" + mbstring + '.image)'))
+                WINDOW.setProperty(mbstring + '.path', xbmc.getInfoLabel("Skin.String(" + mbstring + '.path)'))
+            linkCount += 1    
 
     def setContentInCache(self):         
         WINDOW = xbmcgui.Window( 10000 )
-        if xbmc.getCondVisibility("System.HasAddon(plugin.video.xbmb3c)"):
-            linkCount = 0
-            while linkCount !=10:
-                mbstring = "titanmb3." + str(linkCount)
-                if WINDOW.getProperty(mbstring + '.title') != "":
-                    xbmc.executebuiltin('Skin.SetString(' + mbstring + '.title,' + WINDOW.getProperty(mbstring + '.title') + ")")
-                    xbmc.executebuiltin('Skin.SetString(' + mbstring + '.image,' + WINDOW.getProperty(mbstring + '.image') + ")")
-                    xbmc.executebuiltin('Skin.SetString(' + mbstring + '.path,' + WINDOW.getProperty(mbstring + '.path') + ")")
-                else:
-                    xbmc.executebuiltin('Skin.Reset(' + mbstring + '.title)')
-                    xbmc.executebuiltin('Skin.Reset(' + mbstring + '.image)')
-                    xbmc.executebuiltin('Skin.Reset(' + mbstring + '.path)')
-                linkCount += 1 
+        linkCount = 0
+        while linkCount !=10:
+            mbstring = "MediaBrowser.usr." + str(linkCount)
+            if WINDOW.getProperty(mbstring + '.title') != "":
+                xbmc.executebuiltin('Skin.SetString(' + mbstring + '.title,' + WINDOW.getProperty(mbstring + '.title') + ")")
+                xbmc.executebuiltin('Skin.SetString(' + mbstring + '.image,' + WINDOW.getProperty(mbstring + '.image') + ")")
+                xbmc.executebuiltin('Skin.SetString(' + mbstring + '.path,' + WINDOW.getProperty(mbstring + '.path') + ")")
+            else:
+                xbmc.executebuiltin('Skin.Reset(' + mbstring + '.title)')
+                xbmc.executebuiltin('Skin.Reset(' + mbstring + '.image)')
+                xbmc.executebuiltin('Skin.Reset(' + mbstring + '.path)')
+            linkCount += 1 
 
     def run(self):
         self.logMsg("Started")
@@ -677,11 +669,9 @@ class SkinHelper ():
                         if self._userId == "":
                             self.getContentFromCache()
                         else:
-                            self.updateMB3links()
-                            self.setContentInCache()
-    
                             updateResult = False
                             try:
+                                updateResult = self.SetMB3WindowProperties()
                                 updateResult = self.updateTypeArtLinks()
                                 self.updateMB3links()
                                 updateResult = self.updateCollectionArtLinks()
@@ -705,23 +695,23 @@ class SkinHelper ():
                         if self._userId == "":
                             self.getContentFromCache()
                         else:
-                            # some global backgrounds
-                            self.setBackgroundLink("xbmb3c.std.movies.3.image", "favoritemovies")
-                            self.setBackgroundLink("xbmb3c.std.tvshows.4.image", "favoriteshows")
-                            self.setBackgroundLink("xbmb3c.std.channels.0.image", "channels")
-                            self.setBackgroundLink("xbmb3c.std.music.3.image", "musicvideos")
-                            self.setBackgroundLink("xbmb3c.std.photo.0.image", "photos")
+                            # some extra global backgrounds
+                            self.setBackgroundLink("MB3.Background.FavouriteMovies.FanArt", "favoritemovies")
+                            self.setBackgroundLink("MB3.Background.FavouriteShows.FanArt", "favoriteshows")
+                            self.setBackgroundLink("MB3.Background.Channels.FanArt", "channels")
+                            self.setBackgroundLink("MB3.Background.MusicVideos.FanArt", "musicvideos")
+                            self.setBackgroundLink("MB3.Background.Photos.FanArt", "photos")
     
-                            # set MB3 content links
+                            # set MB3 collection backgrounds
                             self.updateMB3links()                    
-                            linkCount = 0
+                            linkCount = int(WINDOW.getProperty("MediaBrowser.usr.Count"))
+                            print("linkCount --> " + str(linkCount))
     
-                            while linkCount !=10:
-                                mbstring = "titanmb3." + str(linkCount)
-                                self.logMsg("set backgroundlink for: " + mbstring)
-                                if not "virtual" in WINDOW.getProperty(mbstring + ".type"):
-                                    self.setBackgroundLink(mbstring + ".image", WINDOW.getProperty(mbstring + ".title"))
-                                linkCount += 1
+                            while linkCount !=0:
+                                mbstring = "MediaBrowser.usr." + str(linkCount)
+                                self.logMsg("set backgroundlink for: " + WINDOW.getProperty(mbstring + ".title"))
+                                self.setBackgroundLink(mbstring + ".background", WINDOW.getProperty(mbstring + ".title"))
+                                linkCount -= 1
     
                             self.setContentInCache()
     
@@ -763,66 +753,145 @@ class SkinHelper ():
             backGroundUrl = backGroundUrl.split("/10000/10000/",1)[0]
             backGroundUrl = backGroundUrl + "/620/350/0"
         win.setProperty(backGroundString + ".small", backGroundUrl)
+               
+
+    def SetMB3WindowProperties(self, filter=None, shared=False ):
+        self.logMsg("[MB3 SkinHelper] setting skin properties...")
         
-        #set boxsets collapsed for movies
-        link = win.getProperty("xbmb3c.std.movies.0.path")
-        link = link.replace("&mode=0,return)", "")
-        link = link + "%26CollapseBoxSetItems%3Dtrue&mode=0,return)"
-        win.setProperty("xbmb3c.std.movies.0.collapsed.path", link)        
-        print("[MB3 SkinHelper] boxsets --> " + link)
-        
-        # collection items update
-        linkCount = 0
-        while linkCount !=10:
-            orgmbstring = "xbmb3c." + str(linkCount)
-            mbstring = "titanmb3." + str(linkCount)
+        try:
+            #Get the global host variable set in settings
+            WINDOW = xbmcgui.Window( 10000 )
+            sectionCount=0
+            usrMoviesCount=0
+            usrMusicCount=0
+            usrTVshowsCount=0
+            stdMoviesCount=0
+            stdTVshowsCount=0
+            stdMusicCount=0
+            stdPhotoCount=0
+            stdChannelsCount=0
+            stdPlaylistsCount=0
+            stdSearchCount=0
+            dirItems = []
+            
+            collapseBoxSets = True #todo: get this from settings
+            
+            allSections = MainModule.getCollections(MainModule.getDetailsString())
+            collectionCount = 0
+            mode=0
+            
+            for section in allSections:
+            
+                details={'title' : section.get('title', 'Unknown') }
 
-            if "mediabrowser" in win.getProperty(orgmbstring + ".recent.path"):
-                win.setProperty(mbstring + ".title", win.getProperty(orgmbstring + ".title"))
-                win.setProperty(mbstring + ".type", win.getProperty(orgmbstring + ".type"))
-                win.setProperty(mbstring + ".fanart", win.getProperty(orgmbstring + ".fanart"))
-                win.setProperty(mbstring + ".recent.path", win.getProperty(orgmbstring + ".recent.path"))
-                win.setProperty(mbstring + ".unwatched.path", win.getProperty(orgmbstring + ".unwatched.path"))
-                if win.getProperty(orgmbstring + ".type") == "tvshows":
-                    win.setProperty(mbstring + ".inprogress.path", win.getProperty(orgmbstring + ".nextepisodes.path"))
-                else:
-                    win.setProperty(mbstring + ".inprogress.path", win.getProperty(orgmbstring + ".inprogress.path"))
+                extraData={ 'fanart_image' : '' ,
+                            'type'         : "Video" ,
+                            'thumb'        : '' ,
+                            'token'        : section.get('token',None) }
 
-                win.setProperty(mbstring + ".genre.path", win.getProperty(orgmbstring + ".genre.path"))
+                extraData['mode']=mode
+                modeurl="&mode=0"
+                s_url='http://%s%s' % (section['address'], section['path'])
+                murl= "?url="+urllib.quote(s_url)+modeurl
+                searchurl = "?url="+urllib.quote(s_url)+"&mode=2"
+
+                #Build that listing..
+                total = section.get('total')
+                if (total == None):
+                    total = 0
                 
-                if win.getProperty(orgmbstring + ".collapsed.path") != "":
-                    win.setProperty(mbstring + ".path", win.getProperty(orgmbstring + ".collapsed.path"))
+                window=""
+                if section.get('sectype')=='photo':
+                    window="Pictures"
+                elif section.get('sectype')=='music':
+                    window="MusicLibrary "
                 else:
-                    win.setProperty(mbstring + ".path", win.getProperty(orgmbstring + ".path"))
-
-                link = win.getProperty(orgmbstring + ".recent.path")
-                link = link.replace("ActivateWindow(VideoLibrary,", "")
-                link = link.replace(",return)", "")
-                win.setProperty(mbstring + ".recent.content", link)
-
-                if "musicvideo" in win.getProperty(orgmbstring + ".type"):
-                    win.setProperty("xbmb3c.std.music.3.content", link)                
-
-                link = win.getProperty(orgmbstring + ".unwatched.path")
-                link = link.replace("ActivateWindow(VideoLibrary,", "")
-                link = link.replace(",return)", "")
-                win.setProperty(orgmbstring + ".unwatched.content", link)
-
-                if win.getProperty(orgmbstring + ".inprogress.path") != "":
-                    link = win.getProperty(orgmbstring + ".inprogress.path")
-                    link = link.replace("ActivateWindow(VideoLibrary,", "")
-                    link = link.replace(",return)", "")
-                    win.setProperty(mbstring + ".inprogress.content", link)  
+                    window="VideoLibrary"
+                    
+                if not section.get('sectype').startswith("std."):
+                    
+                    collectionCount += 1
+                    
+                    #get collections
+                    WINDOW.setProperty("MediaBrowser.usr.%d.title"               % (sectionCount) , section.get('title', 'Unknown'))
+                    WINDOW.setProperty("MediaBrowser.usr.%d.path"                % (sectionCount) , "ActivateWindow("+window+",plugin://plugin.video.xbmb3c/" + murl+",return)")
+                    WINDOW.setProperty("MediaBrowser.usr.%d.type"                % (sectionCount) , section.get('section'))
+                    WINDOW.setProperty("MediaBrowser.usr.%d.fanart"              % (sectionCount) , section.get('fanart_image'))
+                    WINDOW.setProperty("MediaBrowser.usr.%d.recent.path"         % (sectionCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('recent_path', '')) + modeurl + ",return)")
+                    WINDOW.setProperty("MediaBrowser.usr.%d.recent.content"      % (sectionCount) , "plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('recent_path', '')) + modeurl)
+                    WINDOW.setProperty("MediaBrowser.usr.%d.total" % (sectionCount) , str(total))
+                    
+                    # movies-only properties
+                    if section.get('sectype')=='movies':
+                        if collapseBoxSets == True:
+                            WINDOW.setProperty("MediaBrowser.usr.%d.path"      % (sectionCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('collapsed_path', '')) + modeurl + ",return)")
+                    
+                    # tvshows-only properties
+                    if section.get('sectype')=='tvshows':
+                        WINDOW.setProperty("MediaBrowser.usr.%d.nextepisodes.path"   % (sectionCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('nextepisodes_path', '')) + modeurl + ",return)")
+                        WINDOW.setProperty("MediaBrowser.usr.%d.nextepisodes.content"   % (sectionCount) , "plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('nextepisodes_path', '')) + modeurl)
+                    # properties not available for photo and music
+                    if section.get('sectype')!='photo' and section.get('sectype')!='music':
+                        WINDOW.setProperty("MediaBrowser.usr.%d.unwatched.path"      % (sectionCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('unwatched_path', '')) + modeurl + ",return)")
+                        WINDOW.setProperty("MediaBrowser.usr.%d.unwatched.content"      % (sectionCount) , "plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('unwatched_path', '')) + modeurl)
+                        WINDOW.setProperty("MediaBrowser.usr.%d.inprogress.path"     % (sectionCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('inprogress_path', '')) + modeurl + ",return)")
+                        WINDOW.setProperty("MediaBrowser.usr.%d.inprogress.content"     % (sectionCount) , "plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('inprogress_path', '')) + modeurl)
+                        WINDOW.setProperty("MediaBrowser.usr.%d.genre.path"          % (sectionCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('genre_path', '')) + modeurl + ",return)")
                 
-                if win.getProperty(orgmbstring + ".nextepisodes.path") != "":
-                    link = win.getProperty(orgmbstring + ".nextepisodes.path")
-                    link = link.replace("ActivateWindow(VideoLibrary,", "")
-                    link = link.replace(",return)", "")
-                    win.setProperty(mbstring + ".nextepisodes.content", link)
-                    win.setProperty(mbstring + ".inprogress.content", link)
+                else:    
+                    # standard items
+                    if section.get('sectype')=='std.movies':
+                        WINDOW.setProperty("MediaBrowser.std.movies.%d.title"               % (stdMoviesCount) , section.get('title', 'Unknown'))
+                        if collapseBoxSets == True:
+                            murl = murl.replace("&mode=0", "")
+                            murl = murl + "%26CollapseBoxSetItems%3Dtrue&mode=0"
+                        WINDOW.setProperty("MediaBrowser.std.movies.%d.path"                % (stdMoviesCount) , "ActivateWindow("+window+",plugin://plugin.video.xbmb3c/" + murl+",return)")
+                        WINDOW.setProperty("MediaBrowser.std.movies.%d.content"                % (stdMoviesCount) , "plugin://plugin.video.xbmb3c/" + murl)
+                        WINDOW.setProperty("MediaBrowser.std.movies.%d.type"                % (stdMoviesCount) , section.get('section'))
+                        stdMoviesCount +=1
+                    elif section.get('sectype')=='std.tvshows':
+                        WINDOW.setProperty("MediaBrowser.std.tvshows.%d.title"        % (stdTVshowsCount) , section.get('title', 'Unknown'))
+                        WINDOW.setProperty("MediaBrowser.std.tvshows.%d.path"         % (stdTVshowsCount) , "ActivateWindow("+window+",plugin://plugin.video.xbmb3c/" + murl+",return)")
+                        WINDOW.setProperty("MediaBrowser.std.tvshows.%d.type"         % (stdTVshowsCount) , section.get('section'))
+                        WINDOW.setProperty("MediaBrowser.std.tvshows.%d.content"       % (stdTVshowsCount) , "plugin://plugin.video.xbmb3c/" + murl)
+                        stdTVshowsCount +=1    
+                    elif section.get('sectype')=='std.music':
+                        WINDOW.setProperty("MediaBrowser.std.music.%d.title"        % (stdMusicCount) , section.get('title', 'Unknown'))
+                        WINDOW.setProperty("MediaBrowser.std.music.%d.path"         % (stdMusicCount) , "ActivateWindow("+window+",plugin://plugin.video.xbmb3c/" + murl+",return)")
+                        WINDOW.setProperty("MediaBrowser.std.music.%d.type"         % (stdMusicCount) , section.get('section'))
+                        WINDOW.setProperty("MediaBrowser.std.music.%d.content"       % (stdMusicCount) , "plugin://plugin.video.xbmb3c/" + murl)  
+                        stdMusicCount +=1     
+                    elif section.get('sectype')=='std.photo':
+                        WINDOW.setProperty("MediaBrowser.std.photo.%d.title"        % (stdPhotoCount) , section.get('title', 'Unknown'))
+                        WINDOW.setProperty("MediaBrowser.std.photo.%d.path"         % (stdPhotoCount) , "ActivateWindow("+window+",plugin://plugin.video.xbmb3c/" + murl+",return)")
+                        WINDOW.setProperty("MediaBrowser.std.photo.%d.type"         % (stdPhotoCount) , section.get('section'))
+                        WINDOW.setProperty("MediaBrowser.std.photo.%d.content"       % (stdPhotoCount) , "plugin://plugin.video.xbmb3c/" + murl) 
+                        stdPhotoCount +=1
+                    elif section.get('sectype')=='std.channels':
+                        WINDOW.setProperty("MediaBrowser.std.channels.%d.title"        % (stdChannelsCount) , section.get('title', 'Unknown'))
+                        WINDOW.setProperty("MediaBrowser.std.channels.%d.path"         % (stdChannelsCount) , "ActivateWindow("+window+",plugin://plugin.video.xbmb3c/" + murl+",return)")
+                        WINDOW.setProperty("MediaBrowser.std.channels.%d.type"         % (stdChannelsCount) , section.get('section'))
+                        WINDOW.setProperty("MediaBrowser.std.channels.%d.content"       % (stdChannelsCount) , "plugin://plugin.video.xbmb3c/" + murl)  
+                        stdChannelsCount +=1
+                    elif section.get('sectype')=='std.playlists':
+                        WINDOW.setProperty("MediaBrowser.std.playlists.%d.title"        % (stdPlaylistsCount) , section.get('title', 'Unknown'))
+                        WINDOW.setProperty("MediaBrowser.std.playlists.%d.path"         % (stdPlaylistsCount) , "ActivateWindow("+window+",plugin://plugin.video.xbmb3c/" + murl+",return)")
+                        WINDOW.setProperty("MediaBrowser.std.playlists.%d.type"         % (stdPlaylistsCount) , section.get('section'))
+                        WINDOW.setProperty("MediaBrowser.std.playlists.%d.content"       % (stdPlaylistsCount) , "plugin://plugin.video.xbmb3c/" + murl)  
+                        stdPlaylistsCount +=1
+                    elif section.get('sectype')=='std.search':
+                        WINDOW.setProperty("MediaBrowser.std.search.%d.title"        % (stdSearchCount) , section.get('title', 'Unknown'))
+                        WINDOW.setProperty("MediaBrowser.std.search.%d.path"         % (stdSearchCount) , "ActivateWindow("+window+",plugin://plugin.video.xbmb3c/" + searchurl+",return)")
+                        WINDOW.setProperty("MediaBrowser.std.search.%d.type"         % (stdSearchCount) , section.get('section')) 
+                        stdSearchCount +=1 
+                    sectionCount += 1 
+            WINDOW.setProperty("MediaBrowser.usr.Count", str(collectionCount))
+        except Exception, e:
+            self.logMsg("[MB3 SkinHelper] exception in SetMB3WindowProperties: " + str(e))
+            return False
 
-            linkCount += 1
-
+        return True
+            
 xbmc.log("[MB3 SkinHelper] Started... fetching background images now")
 pollingthread = SkinHelper()
 pollingthread.run()
