@@ -40,7 +40,7 @@ class SkinHelper ():
     shortcheckinterval = 60
     _userId = ""
 
-    doDebugLog = True
+    doDebugLog = False
 
     def logMsg(self, msg, level = 1):
         if self.doDebugLog == True:
@@ -72,11 +72,8 @@ class SkinHelper ():
 
         return (nextIndex, linkList[currentIndex])                 
 
-
+    # get background images for user collections
     def updateCollectionArtLinks(self):
-
-        
-
         addonSettings = xbmcaddon.Addon(id='plugin.video.xbmb3c')
 
         mb3Host = addonSettings.getSetting('ipaddress')
@@ -349,7 +346,7 @@ class SkinHelper ():
         return True        
 
 
-
+    # set a new background image on a item
     def setBackgroundLink(self, windowPropertyName, filterOnCollectionName):
 
         WINDOW = xbmcgui.Window( 10000 )
@@ -397,6 +394,8 @@ class SkinHelper ():
         WINDOW.setProperty(windowPropertyName, backGroundUrl)
         WINDOW.setProperty(windowPropertyName + ".small", backGroundUrl_small)
 
+    
+    #get background images for specific content types
     def updateTypeArtLinks(self):
 
         from DownloadUtils import DownloadUtils
@@ -610,33 +609,6 @@ class SkinHelper ():
             time.sleep(timeout)
             timeout -= 1
             
-    def getContentFromCache(self):
-        WINDOW = xbmcgui.Window( 10000 )
-        self.logMsg("[MB3 SkinHelper] get properties from cache...")
-        linkCount = 0
-        while linkCount !=10:
-            mbstring = "MediaBrowser.usr." + str(linkCount)
-            if xbmc.getInfoLabel("Skin.String(" + mbstring + '.title)') != "":
-                WINDOW.setProperty(mbstring + '.title', xbmc.getInfoLabel("Skin.String(" + mbstring + '.title)'))
-                WINDOW.setProperty(mbstring + '.image', xbmc.getInfoLabel("Skin.String(" + mbstring + '.image)'))
-                WINDOW.setProperty(mbstring + '.path', xbmc.getInfoLabel("Skin.String(" + mbstring + '.path)'))
-            linkCount += 1    
-
-    def setContentInCache(self):         
-        WINDOW = xbmcgui.Window( 10000 )
-        linkCount = 0
-        while linkCount !=10:
-            mbstring = "MediaBrowser.usr." + str(linkCount)
-            if WINDOW.getProperty(mbstring + '.title') != "":
-                xbmc.executebuiltin('Skin.SetString(' + mbstring + '.title,' + WINDOW.getProperty(mbstring + '.title') + ")")
-                xbmc.executebuiltin('Skin.SetString(' + mbstring + '.image,' + WINDOW.getProperty(mbstring + '.image') + ")")
-                xbmc.executebuiltin('Skin.SetString(' + mbstring + '.path,' + WINDOW.getProperty(mbstring + '.path') + ")")
-            else:
-                xbmc.executebuiltin('Skin.Reset(' + mbstring + '.title)')
-                xbmc.executebuiltin('Skin.Reset(' + mbstring + '.image)')
-                xbmc.executebuiltin('Skin.Reset(' + mbstring + '.path)')
-            linkCount += 1 
-
     def run(self):
         self.logMsg("Started")
 
@@ -665,18 +637,16 @@ class SkinHelper ():
                     if xbmc.getCondVisibility("Player.HasVideo"):
                         self.logMsg("[MB3 SkinHelper] ...skipped - video playing...")
                     else:
-                        # load images
-                        if self._userId == "":
-                            self.getContentFromCache()
-                        else:
+                        if self._userId != "":
                             updateResult = False
                             try:
                                 updateResult = self.SetMB3WindowProperties()
+                                self.getImagesFromCache()
                                 updateResult = self.updateTypeArtLinks()
-                                self.updateMB3links()
                                 updateResult = self.updateCollectionArtLinks()
                             except Exception, e:
-                                self.logMsg(str(e))                            
+                                self.logMsg(str(e))
+                                updateResult = False
     
                             if (updateResult == True):
                                 fullcheckinterval_current = self.fullcheckinterval                    
@@ -691,30 +661,28 @@ class SkinHelper ():
                     if xbmc.getCondVisibility("Player.HasVideo"):
                         self.logMsg("[MB3 SkinHelper] ...skipped - video playing...")
                     else:                    
-                        # try to get from cache first
-                        if self._userId == "":
-                            self.getContentFromCache()
-                        else:
-                            # some extra global backgrounds
+                        if self._userId != "":
+                            
+                            # set some extra global backgrounds
                             self.setBackgroundLink("MB3.Background.FavouriteMovies.FanArt", "favoritemovies")
                             self.setBackgroundLink("MB3.Background.FavouriteShows.FanArt", "favoriteshows")
                             self.setBackgroundLink("MB3.Background.Channels.FanArt", "channels")
                             self.setBackgroundLink("MB3.Background.MusicVideos.FanArt", "musicvideos")
                             self.setBackgroundLink("MB3.Background.Photos.FanArt", "photos")
     
-                            # set MB3 collection backgrounds
-                            self.updateMB3links()                    
-                            linkCount = int(WINDOW.getProperty("MediaBrowser.usr.Count"))
-                            print("linkCount --> " + str(linkCount))
-    
-                            while linkCount !=0:
+                            # set MB3 user collection backgrounds
+                            self.updateGlobalBackgrounds()                    
+                            totalUserLinks = int(WINDOW.getProperty("MediaBrowser.usr.Count"))
+                            linkCount = 0
+                            while linkCount != totalUserLinks:
                                 mbstring = "MediaBrowser.usr." + str(linkCount)
                                 self.logMsg("set backgroundlink for: " + WINDOW.getProperty(mbstring + ".title"))
                                 self.setBackgroundLink(mbstring + ".background", WINDOW.getProperty(mbstring + ".title"))
-                                linkCount -= 1
-    
-                            self.setContentInCache()
-    
+                                linkCount += 1
+                                
+                            # set last known images in cache
+                            self.setImagesInCache()
+                            
                     self.logMsg("[MB3 SkinHelper] setting images complete")
                     shortcheckinterval_current = self.shortcheckinterval
 
@@ -729,10 +697,10 @@ class SkinHelper ():
     def stopped(self):
         return self._stop.isSet()
 
-    def updateMB3links(self):
+    def updateGlobalBackgrounds(self):
         win = xbmcgui.Window( 10000 )
         
-        # global items update
+        # add small thumb to global items
         backGroundString = "MB3.Background.Music.FanArt"
         backGroundUrl = win.getProperty(backGroundString)
         if "/10000/10000/" in backGroundUrl:
@@ -755,6 +723,72 @@ class SkinHelper ():
         win.setProperty(backGroundString + ".small", backGroundUrl)
                
 
+    # primitive cache by getting last known images from skin-settings           
+    def getImagesFromCache(self):
+        WINDOW = xbmcgui.Window( 10000 )
+        self.logMsg("[MB3 skin helper] get properties from cache...")
+        
+        # user collections
+        totalUserLinks = int(WINDOW.getProperty("MediaBrowser.usr.Count"))
+        linkCount = 0
+        while linkCount !=totalUserLinks:
+            mbstring = "MediaBrowser.usr." + str(linkCount)
+            if xbmc.getInfoLabel("Skin.String(" + mbstring + '.background)') != "":
+                WINDOW.setProperty(mbstring + '.background', xbmc.getInfoLabel("Skin.String(" + mbstring + '.background)'))
+                WINDOW.setProperty(mbstring + '.background.small', xbmc.getInfoLabel("Skin.String(" + mbstring + '.background.small)'))
+            linkCount += 1
+        
+        #global backgrounds
+        mbstring = "MB3.Background.FavouriteMovies.FanArt"
+        WINDOW.setProperty(mbstring, xbmc.getInfoLabel("Skin.String(" + mbstring + ')'))
+        WINDOW.setProperty(mbstring + '.small', xbmc.getInfoLabel("Skin.String(" + mbstring + '.small)'))
+        mbstring = "MB3.Background.FavouriteShows.FanArt"
+        WINDOW.setProperty(mbstring, xbmc.getInfoLabel("Skin.String(" + mbstring + ')'))
+        WINDOW.setProperty(mbstring + '.small', xbmc.getInfoLabel("Skin.String(" + mbstring + '.small)'))
+        mbstring = "MB3.Background.Channels.FanArt"
+        WINDOW.setProperty(mbstring, xbmc.getInfoLabel("Skin.String(" + mbstring + ')'))
+        WINDOW.setProperty(mbstring + '.small', xbmc.getInfoLabel("Skin.String(" + mbstring + '.small)'))
+        mbstring = "MB3.Background.MusicVideos.FanArt"
+        WINDOW.setProperty(mbstring, xbmc.getInfoLabel("Skin.String(" + mbstring + ')'))
+        WINDOW.setProperty(mbstring + '.small', xbmc.getInfoLabel("Skin.String(" + mbstring + '.small)'))
+        mbstring = "MB3.Background.Photos.FanArt"
+        WINDOW.setProperty(mbstring, xbmc.getInfoLabel("Skin.String(" + mbstring + ')'))
+        WINDOW.setProperty(mbstring + '.small', xbmc.getInfoLabel("Skin.String(" + mbstring + '.small)'))
+
+
+    # primitive cache by storing last known images in skin-settings
+    def setImagesInCache(self):         
+        WINDOW = xbmcgui.Window( 10000 )
+        
+        #user collections
+        totalUserLinks = 10
+        totalUserLinks = int(WINDOW.getProperty("MediaBrowser.usr.Count"))
+        linkCount = 0
+        while linkCount !=totalUserLinks:
+            mbstring = "MediaBrowser.usr." + str(linkCount)
+            xbmc.executebuiltin('Skin.SetString(' + mbstring + '.background,' + WINDOW.getProperty(mbstring + '.background') + ")")
+            xbmc.executebuiltin('Skin.SetString(' + mbstring + '.background.small,' + WINDOW.getProperty(mbstring + '.background.small') + ")")
+            linkCount += 1
+            
+        #global backgrounds
+        mbstring = "MB3.Background.FavouriteMovies.FanArt"
+        xbmc.executebuiltin('Skin.SetString(' + mbstring + ',' + WINDOW.getProperty(mbstring) + ")")
+        xbmc.executebuiltin('Skin.SetString(' + mbstring + '.small,' + WINDOW.getProperty(mbstring + '.small') + ")")
+        mbstring = "MB3.Background.FavouriteShows.FanArt"
+        xbmc.executebuiltin('Skin.SetString(' + mbstring + ',' + WINDOW.getProperty(mbstring) + ")")
+        xbmc.executebuiltin('Skin.SetString(' + mbstring + '.small,' + WINDOW.getProperty(mbstring + '.small') + ")")
+        mbstring = "MB3.Background.Channels.FanArt"
+        xbmc.executebuiltin('Skin.SetString(' + mbstring + ',' + WINDOW.getProperty(mbstring) + ")")
+        xbmc.executebuiltin('Skin.SetString(' + mbstring + '.small,' + WINDOW.getProperty(mbstring + '.small') + ")")
+        mbstring = "MB3.Background.MusicVideos.FanArt"
+        xbmc.executebuiltin('Skin.SetString(' + mbstring + ',' + WINDOW.getProperty(mbstring) + ")")
+        xbmc.executebuiltin('Skin.SetString(' + mbstring + '.small,' + WINDOW.getProperty(mbstring + '.small') + ")")
+        mbstring = "MB3.Background.Photos.FanArt"
+        xbmc.executebuiltin('Skin.SetString(' + mbstring + ',' + WINDOW.getProperty(mbstring) + ")")
+        xbmc.executebuiltin('Skin.SetString(' + mbstring + '.small,' + WINDOW.getProperty(mbstring + '.small') + ")")
+
+
+        
     def SetMB3WindowProperties(self, filter=None, shared=False ):
         self.logMsg("[MB3 SkinHelper] setting skin properties...")
         
@@ -774,7 +808,7 @@ class SkinHelper ():
             stdSearchCount=0
             dirItems = []
             
-            collapseBoxSets = True #todo: get this from settings
+            collapseBoxSets = True #todo: get this from settings or skinsetting
             
             allSections = MainModule.getCollections(MainModule.getDetailsString())
             collectionCount = 0
@@ -807,12 +841,10 @@ class SkinHelper ():
                     window="MusicLibrary "
                 else:
                     window="VideoLibrary"
-                    
-                if not section.get('sectype').startswith("std."):
-                    
+                
+                #get user collections
+                if not "std." in section.get('sectype'):
                     collectionCount += 1
-                    
-                    #get collections
                     WINDOW.setProperty("MediaBrowser.usr.%d.title"               % (sectionCount) , section.get('title', 'Unknown'))
                     WINDOW.setProperty("MediaBrowser.usr.%d.path"                % (sectionCount) , "ActivateWindow("+window+",plugin://plugin.video.xbmb3c/" + murl+",return)")
                     WINDOW.setProperty("MediaBrowser.usr.%d.type"                % (sectionCount) , section.get('section'))
@@ -839,7 +871,7 @@ class SkinHelper ():
                         WINDOW.setProperty("MediaBrowser.usr.%d.genre.path"          % (sectionCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('genre_path', '')) + modeurl + ",return)")
                 
                 else:    
-                    # standard items
+                    # get standard items
                     if section.get('sectype')=='std.movies':
                         WINDOW.setProperty("MediaBrowser.std.movies.%d.title"               % (stdMoviesCount) , section.get('title', 'Unknown'))
                         if collapseBoxSets == True:
@@ -884,7 +916,7 @@ class SkinHelper ():
                         WINDOW.setProperty("MediaBrowser.std.search.%d.path"         % (stdSearchCount) , "ActivateWindow("+window+",plugin://plugin.video.xbmb3c/" + searchurl+",return)")
                         WINDOW.setProperty("MediaBrowser.std.search.%d.type"         % (stdSearchCount) , section.get('section')) 
                         stdSearchCount +=1 
-                    sectionCount += 1 
+                sectionCount += 1 
             WINDOW.setProperty("MediaBrowser.usr.Count", str(collectionCount))
         except Exception, e:
             self.logMsg("[MB3 SkinHelper] exception in SetMB3WindowProperties: " + str(e))

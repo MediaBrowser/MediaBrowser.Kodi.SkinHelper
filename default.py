@@ -1,11 +1,11 @@
 import xbmcplugin
 import xbmcgui
-import xbmcvfs
 import shutil
 import xbmcaddon
 import os
 import time
 import urllib
+import xbmcvfs
 
 # function to set the current view permanent in the xbmb3c addon
 def setView(containerType,viewId):
@@ -35,7 +35,7 @@ def setView(containerType,viewId):
     if xbmc.getCondVisibility("System.HasAddon(plugin.video.xbmb3c)"):
         __settings__ = xbmcaddon.Addon(id='plugin.video.xbmb3c')
         __settings__.setSetting(xbmc.getSkinDir()+ '_VIEW_' + containerType, viewId)
-    
+
         
 def setRecommendedMBSettings(skin):
     addonSettings = xbmcaddon.Addon(id='plugin.video.xbmb3c')
@@ -44,7 +44,7 @@ def setRecommendedMBSettings(skin):
         addonSettings.setSetting('includePeople', 'false')
         addonSettings.setSetting('showIndicators', 'false')
         addonSettings.setSetting('showArtIndicators', 'false')
-        addonSettings.setSetting('useMenuLoader', 'false')
+        addonSettings.setSetting('useMenuLoader', 'false')       
     elif skin == "1080XF":
         addonSettings.setSetting('includePeople', 'false')
         addonSettings.setSetting('showArtIndicators', 'true')
