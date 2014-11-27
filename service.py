@@ -853,8 +853,18 @@ class SkinHelper ():
                     WINDOW.setProperty("MediaBrowser.usr.%d.recent.content"      % (sectionCount) , "plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('recent_path', '')) + modeurl)
                     WINDOW.setProperty("MediaBrowser.usr.%d.total" % (sectionCount) , str(total))
                     
+          
                     # movies-only properties
                     if section.get('sectype')=='movies':
+                        WINDOW.setProperty("MediaBrowser.usr.movies.%d.title"         % (usrMoviesCount) , section.get('title', 'Unknown'))
+                        WINDOW.setProperty("MediaBrowser.usr.movies.%d.path"          % (usrMoviesCount) , "ActivateWindow("+window+",plugin://plugin.video.xbmb3c/" + murl+",return)")
+                        WINDOW.setProperty("MediaBrowser.usr.movies.%d.type"          % (usrMoviesCount) , section.get('section'))
+                        WINDOW.setProperty("MediaBrowser.usr.movies.%d.content"       % (usrMoviesCount) , "plugin://plugin.video.xbmb3c/" + murl)
+                        WINDOW.setProperty("MediaBrowser.usr.movies.%d.recent.path"         % (usrMoviesCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('recent_path', '')) + modeurl + ",return)")
+                        WINDOW.setProperty("MediaBrowser.usr.movies.%d.unwatched.path"      % (usrMoviesCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('unwatched_path', '')) + modeurl + ",return)")
+                        WINDOW.setProperty("MediaBrowser.usr.movies.%d.inprogress.path"     % (usrMoviesCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('inprogress_path', '')) + modeurl + ",return)")
+                        WINDOW.setProperty("MediaBrowser.usr.movies.%d.genre.path"          % (usrMoviesCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('genre_path', '')) + modeurl + ",return)")
+                        usrMoviesCount +=1
                         if collapseBoxSets == True:
                             WINDOW.setProperty("MediaBrowser.usr.%d.path"      % (sectionCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('collapsed_path', '')) + modeurl + ",return)")
                     
@@ -862,6 +872,25 @@ class SkinHelper ():
                     if section.get('sectype')=='tvshows':
                         WINDOW.setProperty("MediaBrowser.usr.%d.nextepisodes.path"   % (sectionCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('nextepisodes_path', '')) + modeurl + ",return)")
                         WINDOW.setProperty("MediaBrowser.usr.%d.nextepisodes.content"   % (sectionCount) , "plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('nextepisodes_path', '')) + modeurl)
+                    
+                        WINDOW.setProperty("MediaBrowser.usr.tvshows.%d.title"        % (usrTVshowsCount) , section.get('title', 'Unknown'))
+                        WINDOW.setProperty("MediaBrowser.usr.tvshows.%d.path"         % (usrTVshowsCount) , "ActivateWindow("+window+",plugin://plugin.video.xbmb3c/" + murl+",return)")
+                        WINDOW.setProperty("MediaBrowser.usr.tvshows.%d.type"         % (usrTVshowsCount) , section.get('section'))
+                        WINDOW.setProperty("MediaBrowser.usr.tvshows.%d.content"       % (usrTVshowsCount) , "plugin://plugin.video.xbmb3c/" + murl)
+                        WINDOW.setProperty("MediaBrowser.usr.tvshows.%d.recent.path"         % (usrTVshowsCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('recent_path', '')) + modeurl + ",return)")
+                        WINDOW.setProperty("MediaBrowser.usr.tvshows.%d.unwatched.path"      % (usrTVshowsCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('unwatched_path', '')) + modeurl + ",return)")
+                        WINDOW.setProperty("MediaBrowser.usr.tvshows.%d.inprogress.path"     % (usrTVshowsCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('inprogress_path', '')) + modeurl + ",return)")
+                        WINDOW.setProperty("MediaBrowser.usr.tvshows.%d.genre.path"          % (usrTVshowsCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('genre_path', '')) + modeurl + ",return)")
+                        WINDOW.setProperty("MediaBrowser.usr.tvshows.%d.nextepisodes.path"   % (usrTVshowsCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('nextepisodes_path', '')) + modeurl + ",return)")
+                        usrTVshowsCount +=1
+                        
+                    if section.get('sectype')=='music':
+                        WINDOW.setProperty("MediaBrowser.usr.music.%d.title"        % (usrMusicCount) , section.get('title', 'Unknown'))
+                        WINDOW.setProperty("MediaBrowser.usr.music.%d.path"         % (usrMusicCount) , "ActivateWindow("+window+",plugin://plugin.video.xbmb3c/" + murl+",return)")
+                        WINDOW.setProperty("MediaBrowser.usr.music.%d.type"         % (usrMusicCount) , section.get('section'))
+                        WINDOW.setProperty("MediaBrowser.usr.music.%d.content"       % (usrMusicCount) , "plugin://plugin.video.xbmb3c/" + murl)
+                        usrMusicCount +=1
+                    
                     # properties not available for photo and music
                     if section.get('sectype')!='photo' and section.get('sectype')!='music':
                         WINDOW.setProperty("MediaBrowser.usr.%d.unwatched.path"      % (sectionCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('unwatched_path', '')) + modeurl + ",return)")
