@@ -17,8 +17,6 @@ if xbmc.getCondVisibility("System.HasAddon(plugin.video.xbmb3c)"):
     sys.path.append(BASE_RESOURCE_PATH)
     from DownloadUtils import DownloadUtils
     downloadUtils = DownloadUtils()
-    from DownloadUtils import DownloadUtils
-    downloadUtils = DownloadUtils()
     import MainModule
 
 class SkinHelper ():
@@ -754,7 +752,15 @@ class SkinHelper ():
         mbstring = "MB3.Background.Photos.FanArt"
         WINDOW.setProperty(mbstring, xbmc.getInfoLabel("Skin.String(" + mbstring + ')'))
         WINDOW.setProperty(mbstring + '.small', xbmc.getInfoLabel("Skin.String(" + mbstring + '.small)'))
-
+        mbstring = "MB3.Background.Movie.FanArt"
+        WINDOW.setProperty(mbstring, xbmc.getInfoLabel("Skin.String(" + mbstring + ')'))
+        WINDOW.setProperty(mbstring + '.small', xbmc.getInfoLabel("Skin.String(" + mbstring + '.small)'))
+        mbstring = "MB3.Background.TV.FanArt"
+        WINDOW.setProperty(mbstring, xbmc.getInfoLabel("Skin.String(" + mbstring + ')'))
+        WINDOW.setProperty(mbstring + '.small', xbmc.getInfoLabel("Skin.String(" + mbstring + '.small)'))
+        mbstring = "MB3.Background.Music.FanArt"
+        WINDOW.setProperty(mbstring, xbmc.getInfoLabel("Skin.String(" + mbstring + ')'))
+        WINDOW.setProperty(mbstring + '.small', xbmc.getInfoLabel("Skin.String(" + mbstring + '.small)'))
 
     # primitive cache by storing last known images in skin-settings
     def setImagesInCache(self):         
@@ -786,8 +792,15 @@ class SkinHelper ():
         mbstring = "MB3.Background.Photos.FanArt"
         xbmc.executebuiltin('Skin.SetString(' + mbstring + ',' + WINDOW.getProperty(mbstring) + ")")
         xbmc.executebuiltin('Skin.SetString(' + mbstring + '.small,' + WINDOW.getProperty(mbstring + '.small') + ")")
-
-
+        mbstring = "MB3.Background.Movie.FanArt"
+        xbmc.executebuiltin('Skin.SetString(' + mbstring + ',' + WINDOW.getProperty(mbstring) + ")")
+        xbmc.executebuiltin('Skin.SetString(' + mbstring + '.small,' + WINDOW.getProperty(mbstring + '.small') + ")")
+        mbstring = "MB3.Background.TV.FanArt"
+        xbmc.executebuiltin('Skin.SetString(' + mbstring + ',' + WINDOW.getProperty(mbstring) + ")")
+        xbmc.executebuiltin('Skin.SetString(' + mbstring + '.small,' + WINDOW.getProperty(mbstring + '.small') + ")")
+        mbstring = "MB3.Background.Music.FanArt"
+        xbmc.executebuiltin('Skin.SetString(' + mbstring + ',' + WINDOW.getProperty(mbstring) + ")")
+        xbmc.executebuiltin('Skin.SetString(' + mbstring + '.small,' + WINDOW.getProperty(mbstring + '.small') + ")")
         
     def SetMB3WindowProperties(self, filter=None, shared=False ):
         self.logMsg("[MB3 SkinHelper] setting skin properties...")
