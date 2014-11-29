@@ -12,7 +12,7 @@ Note: if you keep the skin initialize intact you will also have the old xbmb3c. 
 
 The service provides the following window properties:
 
-## USER COLLECTIONS
+## USER COLLECTIONS - NOT INDEXED BY TYPE
 MediaBrowser.usr.X.title  --> title of collection
 MediaBrowser.usr.X.path  --> path to collection (defaults to collapsed boxsets for movies)
 MediaBrowser.usr.X.type  --> the type of the collection
@@ -28,7 +28,32 @@ MediaBrowser.usr.X.inprogress.path --> link to in-progress items of a collection
 MediaBrowser.usr.X.inprogress.content --> link to in-progress contentpath for use in widgets
 MediaBrowser.usr.X.genre.path --> link to genres of a collection
 MediaBrowser.usr.X.nextepisodes.path --> link to next episodes of a tvshow-collection
-MediaBrowser.usr.X.nextepisodes.content --> link to next episodes contentpath for use in widgets
+MediaBrowser.usr.X.nextepisodes.content --> link to in-progress contentpath for use in widgets
+
+## USER COLLECTIONS - INDEXED BY TYPE
+MediaBrowser.usr.X.movies.X.title  --> title of collection
+MediaBrowser.usr.X.movies.path  --> path to collection
+MediaBrowser.usr.X.movies.type  --> the type of the collection
+MediaBrowser.usr.X.movies.content  --> link to contentpath for use in widgets
+MediaBrowser.usr.X.movies.recent.path --> link to recently added items of the collection
+MediaBrowser.usr.X.movies.unwatched.path --> link to unwatched items of a collection
+MediaBrowser.usr.X.movies.inprogress.path --> link to in-progress items of a collection
+MediaBrowser.usr.X.movies.genre.path --> link to genres of a collection
+
+MediaBrowser.usr.X.tvshows.X.title  --> title of collection
+MediaBrowser.usr.X.tvshows.path  --> path to collection 
+MediaBrowser.usr.X.tvshows.type  --> the type of the collection
+MediaBrowser.usr.X.tvshows.content  --> link to contentpath for use in widgets
+MediaBrowser.usr.X.tvshows.recent.path --> link to recently added items of the collection
+MediaBrowser.usr.X.tvshows.unwatched.path --> link to unwatched items of a collection
+MediaBrowser.usr.X.tvshows.inprogress.path --> link to in-progress items of a collection
+MediaBrowser.usr.X.tvshows.genre.path --> link to genres of a collection
+MediaBrowser.usr.X.tvshows.nextepisodes.path --> link to next episodes of a tvshow-collection
+
+MediaBrowser.usr.X.music.X.title  --> title of collection
+MediaBrowser.usr.X.music.path  --> path to collection 
+MediaBrowser.usr.X.music.type  --> the type of the collection
+MediaBrowser.usr.X.music.content  --> link to contentpath for use in widgets
 
 ## STANDARD ITEMS
 MediaBrowser.std.movies.0 - All Movies  --> will default to collapsed boxsets

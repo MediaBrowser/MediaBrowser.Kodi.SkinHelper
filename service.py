@@ -821,7 +821,9 @@ class SkinHelper ():
             stdSearchCount=0
             dirItems = []
             
-            collapseBoxSets = True #todo: get this from settings or skinsetting
+            # some default settings (todo: get this from a skin setting)
+            collapseBoxSets = True #todo: get this from (skin)settings
+            useNextUpforInProgressTvShowsWidget = True #todo: get this from (skin)settings
             
             allSections = MainModule.getCollections(MainModule.getDetailsString())
             collectionCount = 0
@@ -878,7 +880,8 @@ class SkinHelper ():
                         WINDOW.setProperty("MediaBrowser.usr.%d.inprogress.path"     % (sectionCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('inprogress_path', '')) + modeurl + ",return)")
                         WINDOW.setProperty("MediaBrowser.usr.%d.inprogress.content"     % (sectionCount) , "plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('inprogress_path', '')) + modeurl)
                         WINDOW.setProperty("MediaBrowser.usr.%d.genre.path"          % (sectionCount) , "ActivateWindow(" + window + ",plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('genre_path', '')) + modeurl + ",return)")
-
+                    if useNextUpforInProgressTvShowsWidget == True and section.get('sectype')=='tvshows':
+                        WINDOW.setProperty("MediaBrowser.usr.%d.inprogress.content"     % (sectionCount) , "plugin://plugin.video.xbmb3c/?url=http://" + urllib.quote(section['address'] + section.get('nextepisodes_path', '')) + modeurl)
           
                     #get user collections - indexed by type
                     if section.get('sectype')=='movies':
