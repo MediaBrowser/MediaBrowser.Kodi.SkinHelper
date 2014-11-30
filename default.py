@@ -46,6 +46,7 @@ def setRecommendedMBSettings(skin):
         addonSettings.setSetting('showIndicators', 'false')
         addonSettings.setSetting('showArtIndicators', 'false')
         addonSettings.setSetting('useMenuLoader', 'false')       
+        addonSettings.setSetting('selectAction', '0')
     elif skin == "1080XF":
         addonSettings.setSetting('includePeople', 'false')
         addonSettings.setSetting('showArtIndicators', 'true')
