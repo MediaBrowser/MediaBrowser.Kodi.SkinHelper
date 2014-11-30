@@ -39,18 +39,19 @@ def setView(containerType,viewId):
             __settings__.setSetting(xbmc.getSkinDir()+ '_VIEW_' + containerType, viewId)
         
 def setRecommendedMBSettings(skin):
-    addonSettings = xbmcaddon.Addon(id='plugin.video.xbmb3c')
-    
-    if skin == "titan":
-        addonSettings.setSetting('includePeople', 'false')
-        addonSettings.setSetting('showIndicators', 'false')
-        addonSettings.setSetting('showArtIndicators', 'false')
-        addonSettings.setSetting('useMenuLoader', 'false')       
-        addonSettings.setSetting('selectAction', '0')
-    elif skin == "1080XF":
-        addonSettings.setSetting('includePeople', 'false')
-        addonSettings.setSetting('showArtIndicators', 'true')
-        addonSettings.setSetting('includeOverview', 'true')       
+    if xbmc.getCondVisibility("System.HasAddon(plugin.video.xbmb3c)"):
+        addonSettings = xbmcaddon.Addon(id='plugin.video.xbmb3c')
+        
+        if skin == "titan":
+            addonSettings.setSetting('includePeople', 'false')
+            addonSettings.setSetting('showIndicators', 'false')
+            addonSettings.setSetting('showArtIndicators', 'false')
+            addonSettings.setSetting('useMenuLoader', 'false')       
+            addonSettings.setSetting('selectAction', '0')
+        elif skin == "1080XF":
+            addonSettings.setSetting('includePeople', 'false')
+            addonSettings.setSetting('showArtIndicators', 'true')
+            addonSettings.setSetting('includeOverview', 'true')       
         
         
 #script init
