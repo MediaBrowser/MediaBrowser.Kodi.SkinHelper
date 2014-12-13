@@ -974,17 +974,17 @@ class SkinHelper ():
 def versiontuple(v):
     return tuple(map(int, (v.split("."))))
 
-        
-xbmc.log("[MB3 SkinHelper] Started... fetching background images now")
+# do not run if xbmb3c addon not available
+if xbmc.getCondVisibility("System.HasAddon(plugin.video.xbmb3c)"):        
+    xbmc.log("[MB3 SkinHelper] Started... fetching background images now")
 
-# do not run if xbmb3c addon contains this stuff
-mb3Version = "0.9.734"
-mb3Version = xbmc.getInfoLabel('System.AddonVersion(plugin.video.xbmb3c)')   
-if versiontuple(mb3Version) >= versiontuple("0.9.734"):
-    print("xbmb3c addon version is greater than 734, skipping helper service...")
-else:
-    pollingthread = SkinHelper()
-    pollingthread.run()
+    # do not run if xbmb3c addon contains allready this stuff
+    mb3Version = xbmc.getInfoLabel('System.AddonVersion(plugin.video.xbmb3c)')   
+    if versiontuple(mb3Version) >= versiontuple("0.9.734"):
+        print("xbmb3c addon version is greater than 734, skipping helper service...")
+    else:
+        pollingthread = SkinHelper()
+        pollingthread.run()
 
 
 
