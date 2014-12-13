@@ -978,6 +978,7 @@ def versiontuple(v):
 xbmc.log("[MB3 SkinHelper] Started... fetching background images now")
 
 # do not run if xbmb3c addon contains this stuff
+mb3Version = "0.9.734"
 mb3Version = xbmc.getInfoLabel('System.AddonVersion(plugin.video.xbmb3c)')   
 if versiontuple(mb3Version) >= versiontuple("0.9.734"):
     print("xbmb3c addon version is greater than 734, skipping helper service...")
